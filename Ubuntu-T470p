@@ -55,9 +55,6 @@ sudo apt-get install -y pcscd #needed for yubikey PIV gration
 sudo apt-get install -y libpam-u2f #needed for yubikey sudo authentication
 sudo apt-get install -y tailscale #Install Tailscale (official APT repo install)
 sudo apt-get install -y f3 #verification checker for SD cards
-sudo apt-get install tlp -y #Laptop power saving tools, check using sudo tlp-stat -s
-sudo apt-get install tlp-rdw -y #Used by TLP to control Bluetooth and Wifi radios
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y google-chrome-stable # Google Chrome (Resilient Manual Config)
 
 #Download and intsall deb Files, Clean then Delete
 
