@@ -129,13 +129,6 @@ sudo apt-get upgrade -y
 sudo apt-get autoremove -y
 sudo apt-get clean
 
-#MS Money Setup - has user interaction to select the installation directory
-unzip -q ~/software-install/msmoneysetup_Linux_FullInstall_*.zip -d ~/software-install/ # 1. Unzip the setup files to the software-install directory
-mv ~/software-install/msmoneysetup/* ~/msmoneysetup/ # 2. Move the unzipped setup files to the user's home directory for easier access
-cd ~/msmoneysetup # 4. Change into the directory
-chmod +x Install.sh # 5. Explicitly force the install script to be executable
-./Install.sh # 6. Execute the setup script
-
 echo 'Reboot now to apply all changes and updates, including the new kernel if one was installed. After rebooting, check that everything is working correctly'
 
 #Restart the computer:)
