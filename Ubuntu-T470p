@@ -53,9 +53,7 @@ sudo apt-get install -y libfuse2t64 #needed for appimage software to run
 sudo apt-get install -y fzf #fuzzy search and history for BASH Terminal
 sudo apt-get install -y pcscd #needed for yubikey PIV gration
 sudo apt-get install -y libpam-u2f #needed for yubikey sudo authentication
-sudo apt-get install -y btop #Performance monitoring TUI tool
 sudo apt-get install -y tailscale #Install Tailscale (official APT repo install)
-sudo apt-get install -y ubuntu-pro-client #Install Ubuntu Pro client for extended security updates
 sudo apt-get install -y f3 #verification checker for SD cards
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y google-chrome-stable # Google Chrome (Resilient Manual Config)
 
@@ -100,15 +98,6 @@ sudo sed -i 's/^Checks.*/Checks 0/' /etc/clamav/freshclam.conf #Disable automati
 
 #Setup Services to start on Boot
 sudo ufw enable #Enable Firewall
-
-#Turn Ubuntu Livepatch on - If on an LTS release
-sudo ua attach $LIVEPATCH_TOKEN
-sudo ua enable livepatch
-
-#set fingerprint login preferences password at login and fingerprint and yubikey to sudo once logged in
-sudo sed -i 's/^\s*auth\s\+\[success=.*pam_fprintd\.so/#&/' /etc/pam.d/common-auth
-sudo grep -q 'pam_u2f.so' /etc/pam.d/sudo || sudo sed -i '1a auth    sufficient      pam_u2f.so      cue [cue_prompt="Tap the Yubikey to Sudo"]' /etc/pam.d/sudo
-sudo grep -q 'pam_fprintd.so' /etc/pam.d/sudo || sudo sed -i '2a auth    sufficient      pam_fprintd.so' /etc/pam.d/sudo
 
 #Set up Gnome Extensions need to be run as user not root
 gnome-extensions disable ubuntu-dock@ubuntu.com #Disable Ubuntu dock on LHS of screen
