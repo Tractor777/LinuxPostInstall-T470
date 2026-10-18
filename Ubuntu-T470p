@@ -1,1 +1,198 @@
+#!/bin/bash
+source install.env
+set -e #stop the script if there are errors
 
+sudo apt-get update  # To get the latest package lists
+
+#Create necessary directories with appropriate permissions
+sudo mkdir -p --mode=0755 /usr/share/keyrings # Ensure the keyring directory exists
+sudo mkdir -p ~/.local/share/applications #create directory for application shortcuts if it doesn't exist
+sudo mkdir -p --mode=0755 /etc/dracut.conf.d # Ensure the dracut configuration directory exists with root ownership
+sudo mkdir -p ~/.config/wireplumber
+sudo mkdir -p ~/.config/pipewire/pipewire-pulse.conf.d
+sudo mkdir -p /usr/local/lib/firmware/acpi # create directory for ACPI override tables if it doesn't exist
+mkdir -p ~/msmoneysetup
+mkdir -p --mode=0755 /home/ian/.local/bin # Ensure the local binary directory exists with correct user permissions
+
+#Add Additional Repositories
+sudo apt-get install -y curl #Enable curl required for tailscale repositories
+curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/$(lsb_release -cs).gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null
+curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/$(lsb_release -cs).list | sudo tee /etc/apt/sources.list.d/tailscale.list >/dev/null
+curl -fsSL https://google.com | sudo gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg # Download Google's official signing key to the expected path
+sudo cp ~/software-install/custom-chrome.sources /etc/apt/sources.list.d/ # Copy custom config file into place (Google will ignore and never overwrite this filename!)
+
+#Get Updates
+sudo apt-get update  # To get the latest package lists including the added repositories
+
+#Install SNAP Packages
+sudo snap install code --classic #VS Code IDE
+sudo snap install get-iplayer
+sudo snap install nordvpn
+sudo snap install yt-dlp #YouTube downloader
+sudo snap install retroarch
+sudo snap install ykman #Yubikey manager for configuring the Yubikey and setting up 2FA
+
+#Enable Flatpak apps to be installed
+sudo apt-get install -y flatpak gnome-software-plugin-flatpak # 1. Install Flatpak and the Gnome Software center plugin
+sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo # 2. Add the official Flathub repository system-wide
+
+#Enable Python PIP packages to be installed 
+sudo apt-get install -y python3-pip #needed for pipx and some python apps, pipx is used to install python apps in isolated environments so they don't interfere with each other or the system python installation
+sudo apt-get install -y pipx #new way to install isolated from system
+pipx ensurepath #make sure the directory where pipx installs apps is added to the shell’s PATH
+
+#Install Flatpak Packages
+flatpak install -y flathub org.keepassxc.KeePassXC
+flatpak install -y flathub com.mattjakeman.ExtensionManager #Enable and manage Gnome shell extensions
+flatpak install -y flathub com.github.iwalton3.jellyfin-media-player
+flatpak install -y flathub io.mpv.Mpv #used for streaming radio command line and GUI media player
+flatpak install -y flathub com.borgbase.Vorta #backup application using borg as backend
+flatpak install -y flathub org.DolphinEmu.dolphin-emu #Wii emulator
+flatpak install -y flathub net.pcsx2.PCSX2 #PlayStation 2 emulator
+flatpak install -y flathub io.welle.welle-gui #DAB Radio for RTL-SDR dongle
+flatpak install -y flathub org.mozilla.firefox #Install firefox flatpak to allow av1 hardware video decoding which is not currently working in the deb version of firefox on Ubuntu 26.04
+flatpak install -y flathub com.yubico.yubioath #Yubikey Authenticator with desktop integration and QR code scanning for 2FA setup
+flatpak install -y flathub io.bassi.Amberol #music player
+flatpak install -y flathub org.onlyoffice.desktopeditors #Office suite compatible with Microsoft Office formats
+flatpak install -y flathub io.gitlab.Goodvibes #radio player for streaming online radio stations
+flatpak install -y flathub org.sdrangel.SDRangel
+
+#Install From Ubuntu Repo
+sudo apt-get install -y synaptic #GUI package manager and app installer
+sudo apt-get install -y gufw #Fireweall GUI
+sudo DEBIAN_FRONTEND=noninteractive apt-get -y install ubuntu-restricted-extras #install non-interactive for MS Fonts and includes Lame encoder
+sudo apt-get install -y nautilus-admin #Admin permissions extension for file manager
+sudo apt-get install -y git
+sudo apt-get install -y lm-sensors #Module to read the CPU core temperatures
+sudo apt-get install -y printer-driver-gutenprint #MXG3650s printer driver
+sudo apt-get install -y libsane-common #Common Scanner library, should already be installed
+sudo apt-get install -y intel-gpu-tools #Run intel_gpu_top to check vaapi use
+sudo apt-get install -y intel-media-va-driver-non-free #faster intel quicksync version of the Vaapi driver for intel UHD620 graphic card
+sudo apt-get install -y vainfo #Run vainfo to check that vaapi driver is installed
+sudo apt-get install -y gnome-tweaks
+sudo apt-get install -y ffmpeg #Needed to convert Audible files to .m4a
+sudo apt-get install -y clamav #Command line Virus scanning. sudo freshclam then clamscan -r -i --exclude-dir="^/sys" --exclude-dir="^/var/lib/flatpak" --bell /
+sudo apt-get install -y libfuse2t64 #needed for appimage software to run
+sudo apt-get install -y fzf #fuzzy search and history for BASH Terminal
+sudo apt-get install -y tmux #terminal session window panes
+sudo apt-get install -y pcscd #needed for yubikey PIV gration
+sudo apt-get install -y libpam-u2f #needed for yubikey sudo authentication
+sudo apt-get install -y btop #Performance monitoring TUI tool
+sudo apt-get install -y vulkan-tools #check Vullkan version and operation
+sudo apt-get install -y rtl-433 #433MHz monitoring with RTL-SDR dongle
+sudo apt-get install -y tailscale #Install Tailscale (official APT repo install)
+sudo apt-get install -y ubuntu-pro-client #Install Ubuntu Pro client for extended security updates
+sudo apt-get install -y gnome-shell-extension-appindicator #needed for ubuntu 26.04 to get legacy app indicators working
+sudo apt-get install -y libayatana-appindicator3-1 #needed for ubuntu 26.04 to get legacy app indicators working
+sudo apt-get install -y evtest #Gamepad test in terminal
+sudo apt-get install -y rtl-sdr #Software defined radio support for RTL-SDR dongles, allows them to be used with applications like SDR++ and GQRX without needing to run them as root, also allows them to be used with the rtl_433 software for monitoring 433MHz devices like weather stations, remote power outlets, and some wireless sensors
+sudo apt-get install -y f3 #verification checker for SD cards
+sudo apt-get install -y libudev-dev pkg-config #required for compiling some software from source e.g. RUST and Cargo packages
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y google-chrome-stable # Google Chrome (Resilient Manual Config)
+
+#Download and intsall deb Files, Clean then Delete
+
+# --- SDR++ (Nightly .deb Install) ---
+wget -P /tmp https://github.com/AlexandreRouma/SDRPlusPlus/releases/download/nightly/sdrpp_ubuntu_noble_amd64.deb # 1. Download the nightly build directly to /tmp (no sudo needed for wget here)
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y /tmp/sdrpp_ubuntu_noble_amd64.deb # 2. Install using apt (automatically pulls dependencies and runs unattended)
+rm -f /tmp/sdrpp_ubuntu_noble_amd64.deb # 3. Clean up the downloaded installer
+
+# Install Dropbox
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nautilus-dropbox #Install Dropbox from the official .deb package to ensure the latest version is installed
+dropbox start -i & #Start Dropbox installation in the background, this will prompt the user to link their Dropbox account
+
+#NordVPN Snap Setup
+sudo groupadd nordvpn
+sudo usermod -aG nordvpn $USER
+sudo snap connect nordvpn:network-control
+sudo snap connect nordvpn:network-observe
+sudo snap connect nordvpn:firewall-control
+sudo snap connect nordvpn:login-session-observe
+sudo snap connect nordvpn:system-observe
+sudo snap connect nordvpn:hardware-observe
+sudo nordvpn login --token $T470NORD
+sudo nordvpn set lan-discovery enable #alternative to whitelisting the IP range 192.168.8.0/24
+sudo nordvpn set autoconnect on london #autoconnect to London UK on startup
+sudo nordvpn set tpl on #set threat protection lite to on
+
+#Install Python packages
+
+#Copy Configuration Files
+sudo cp ~/software-install/google-chrome.desktop ~/.local/share/applications/ #chrome desktop shortcut including hardare video decode settings
+sudo cp ~/software-install/99-fiio.rules /etc/udev/rules.d/ #allow chrome web UI to configure Fiio KA17
+sudo cp ~/software-install/60-graph-rate.lua ~/.config/wireplumber/main.lua.d/ #Lua script to set the graph rate in wireplumber for better performance with the Fiio KA17 external DAC
+sudo cp ~/software-install/10-disable-idle-lock.conf ~/.config/pipewire/pipewire-pulse.conf.d/ #Disable idle lock in pipewire to prevent audio dropouts when using the Fiio KA17 external DAC
+sudo cp ~/software-install/org.mozilla.firefox.desktop ~/.local/share/applications/ #firefox desktop shortcut renamed for flatpak version with hardware video decode enabled
+sudo cp ~/software-install/20.rtlsdr.rules /etc/udev/rules.d/ #allows RTL-SDR dongle to be used without sudo
+sudo cp ~/stations.xml ~/.var/app/io.gitlab.Goodvibes/data/goodvibes/ #Goodvibes radio station list
+sudo cp ~/software-install/99-8bitdo.rules /etc/udev/rules.d/ #rules to make 8BitDo controller work better
+sudo cp ~/software-install/uinput.conf /etc/modules-load.d/ #enable extra gamepad input for steam mode
+sudo cp ~/software-install/blacklist-rtl.conf /etc/modprobe.d/ #Blacklist the default rtl2832u driver for RTL-SDR dongles to prevent conflicts with the rtl-sdr package and allow them to be used with applications like SDR++ and GQRX without needing to run them as root, also allows them to be used with the rtl_433 software for monitoring 433MHz devices like weather stations, remote power outlets, and some wireless sensors
+sudo cp ~/software-install/SSDT-DDNT.aml /usr/local/lib/firmware/acpi/ #Copy the pre-compiled ACPI override table for the T14 G2 Intel Temperature Sensor to the firmware directory for dracut to use during boot
+install -m 0755 ~/software-install/radio /home/ian/.local/bin/ # Copy the radio script and make it executable in one action
+
+# Enable ThinkPad Battery Protection (Preservation Mode via gnome UI settings) - This is a one-time command to enable the feature, after which it can be controlled via the gnome settings UI. The command below enables the feature and sets the charge threshold to 80% for battery preservation.
+dbus-send --system --print-reply --dest=org.freedesktop.UPower /org/freedesktop/UPower/devices/battery_BAT0 org.freedesktop.UPower.Device.EnableChargeThreshold boolean:true
+
+#flatpak overrides
+flatpak override org.sdrangel.SDRangel --socket=wayland
+
+# T14 G2 Intel Temperature Sensor Override for dracut - enable the override with dracut to load on boot 
+sudo install -m 0644 software-installs/50-acpi-override.conf /etc/dracut.conf.d/ # Safely copy the file over and enforce standard system read permissions (0644)
+sudo dracut -f
+
+#SNAP overrides
+
+# --- User Profile Customization ---
+sudo install -m 0644 -o root -g root ~/software-install/ian.png /var/lib/AccountsService/icons/ian.png # 1. Safely place the icon file with root ownership and universal read permissions
+sudo install -m 0644 -o root -g root ~/software-install/accounts-user-ian.conf /var/lib/AccountsService/users/ian # 2. Safely place the user metadata file in the configuration path
+
+#Configure application packages
+sudo sed -i 's/^Checks.*/Checks 0/' /etc/clamav/freshclam.conf #Disable automatic updates of clamav change checks=24 to checks=0
+
+#Remove problematic or conflicting packages
+
+#Setup Services to start on Boot
+sudo ufw enable #Enable Firewall
+
+#Turn Ubuntu Livepatch on - If on an LTS release
+sudo ua attach $LIVEPATCH_TOKEN
+sudo ua enable livepatch
+
+#set fingerprint login preferences password at login and fingerprint and yubikey to sudo once logged in
+sudo sed -i 's/^\s*auth\s\+\[success=.*pam_fprintd\.so/#&/' /etc/pam.d/common-auth
+sudo grep -q 'pam_u2f.so' /etc/pam.d/sudo || sudo sed -i '1a auth    sufficient      pam_u2f.so      cue [cue_prompt="Tap the Yubikey to Sudo"]' /etc/pam.d/sudo
+sudo grep -q 'pam_fprintd.so' /etc/pam.d/sudo || sudo sed -i '2a auth    sufficient      pam_fprintd.so' /etc/pam.d/sudo
+
+#Set up Gnome Extensions need to be run as user not root
+gnome-extensions disable ubuntu-dock@ubuntu.com #Disable Ubuntu dock on LHS of screen
+gnome-extensions disable ding@rastersoft.com #disable the Home folder on desktop which causes occasional crashes of gjs
+# --- GNOME Extension: Bing Wallpaper Changer ---
+sudo wget -O /tmp/bing.zip "https://extensions.gnome.org/download-extension/BingWallpaper@ineffable-gmail.com.shell-extension.zip?shell_version=99.99.9"
+gnome-extensions install /tmp/bing.zip
+gnome-extensions enable BingWallpaper@ineffable-gmail.com
+sudo rm -f /tmp/bing.zip
+#Gnome tweaks settings
+gsettings set org.gnome.desktop.interface show-battery-percentage true #show battery percentage in top bar
+gsettings set org.gnome.desktop.interface scaling-factor 1 #set display scaling to 100% (integer values only, so text may be small on high res displays)
+gsettings set org.gnome.desktop.interface text-scaling-factor 1.25 # set text scaling to 125% for better readability on high res displays
+
+#Cleanup and update
+sudo apt-get update
+sudo apt-get upgrade -y
+sudo apt-get autoremove -y
+sudo apt-get clean
+
+#MS Money Setup - has user interaction to select the installation directory
+unzip -q ~/software-install/msmoneysetup_Linux_FullInstall_*.zip -d ~/software-install/ # 1. Unzip the setup files to the software-install directory
+mv ~/software-install/msmoneysetup/* ~/msmoneysetup/ # 2. Move the unzipped setup files to the user's home directory for easier access
+cd ~/msmoneysetup # 4. Change into the directory
+chmod +x Install.sh # 5. Explicitly force the install script to be executable
+./Install.sh # 6. Execute the setup script
+
+echo 'Reboot now to apply all changes and updates, including the new kernel if one was installed. After rebooting, check that everything is working correctly'
+
+#Restart the computer:)
+sudo reboot
+
+exit 0 #Exit the script, shouldn't get here
