@@ -13,8 +13,6 @@ mkdir -p --mode=0755 /home/ian/.local/bin # Ensure the local binary directory ex
 sudo apt-get install -y curl #Enable curl required for tailscale repositories
 curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/$(lsb_release -cs).gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null
 curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/$(lsb_release -cs).list | sudo tee /etc/apt/sources.list.d/tailscale.list >/dev/null
-curl -fsSL https://google.com | sudo gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg # Download Google's official signing key to the expected path
-sudo cp ~/software-install/custom-chrome.sources /etc/apt/sources.list.d/ # Copy custom config file into place (Google will ignore and never overwrite this filename!)
 
 #Get Updates
 sudo apt-get update  # To get the latest package lists including the added repositories
@@ -36,7 +34,6 @@ pipx ensurepath #make sure the directory where pipx installs apps is added to th
 flatpak install -y flathub org.keepassxc.KeePassXC
 flatpak install -y flathub com.mattjakeman.ExtensionManager #Enable and manage Gnome shell extensions
 flatpak install -y flathub com.yubico.yubioath #Yubikey Authenticator with desktop integration and QR code scanning for 2FA setup
-flatpak install -y flathub io.gitlab.Goodvibes #radio player for streaming online radio stations
 
 #Install From Ubuntu Repo
 sudo apt-get install -y synaptic #GUI package manager and app installer
@@ -85,7 +82,6 @@ sudo nordvpn set tpl on #set threat protection lite to on
 #Install Python packages
 
 #Copy Configuration Files
-sudo cp ~/stations.xml ~/.var/app/io.gitlab.Goodvibes/data/goodvibes/ #Goodvibes radio station list
 
 
 # Enable ThinkPad Battery Protection (Preservation Mode via gnome UI settings) - This is a one-time command to enable the feature, after which it can be controlled via the gnome settings UI. The command below enables the feature and sets the charge threshold to 80% for battery preservation.
