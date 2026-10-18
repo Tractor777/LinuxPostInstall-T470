@@ -7,11 +7,6 @@ sudo apt-get update  # To get the latest package lists
 #Create necessary directories with appropriate permissions
 sudo mkdir -p --mode=0755 /usr/share/keyrings # Ensure the keyring directory exists
 sudo mkdir -p ~/.local/share/applications #create directory for application shortcuts if it doesn't exist
-sudo mkdir -p --mode=0755 /etc/dracut.conf.d # Ensure the dracut configuration directory exists with root ownership
-sudo mkdir -p ~/.config/wireplumber
-sudo mkdir -p ~/.config/pipewire/pipewire-pulse.conf.d
-sudo mkdir -p /usr/local/lib/firmware/acpi # create directory for ACPI override tables if it doesn't exist
-mkdir -p ~/msmoneysetup
 mkdir -p --mode=0755 /home/ian/.local/bin # Ensure the local binary directory exists with correct user permissions
 
 #Add Additional Repositories
@@ -25,11 +20,7 @@ sudo cp ~/software-install/custom-chrome.sources /etc/apt/sources.list.d/ # Copy
 sudo apt-get update  # To get the latest package lists including the added repositories
 
 #Install SNAP Packages
-sudo snap install code --classic #VS Code IDE
-sudo snap install get-iplayer
 sudo snap install nordvpn
-sudo snap install yt-dlp #YouTube downloader
-sudo snap install retroarch
 sudo snap install ykman #Yubikey manager for configuring the Yubikey and setting up 2FA
 
 #Enable Flatpak apps to be installed
@@ -44,18 +35,8 @@ pipx ensurepath #make sure the directory where pipx installs apps is added to th
 #Install Flatpak Packages
 flatpak install -y flathub org.keepassxc.KeePassXC
 flatpak install -y flathub com.mattjakeman.ExtensionManager #Enable and manage Gnome shell extensions
-flatpak install -y flathub com.github.iwalton3.jellyfin-media-player
-flatpak install -y flathub io.mpv.Mpv #used for streaming radio command line and GUI media player
-flatpak install -y flathub com.borgbase.Vorta #backup application using borg as backend
-flatpak install -y flathub org.DolphinEmu.dolphin-emu #Wii emulator
-flatpak install -y flathub net.pcsx2.PCSX2 #PlayStation 2 emulator
-flatpak install -y flathub io.welle.welle-gui #DAB Radio for RTL-SDR dongle
-flatpak install -y flathub org.mozilla.firefox #Install firefox flatpak to allow av1 hardware video decoding which is not currently working in the deb version of firefox on Ubuntu 26.04
 flatpak install -y flathub com.yubico.yubioath #Yubikey Authenticator with desktop integration and QR code scanning for 2FA setup
-flatpak install -y flathub io.bassi.Amberol #music player
-flatpak install -y flathub org.onlyoffice.desktopeditors #Office suite compatible with Microsoft Office formats
 flatpak install -y flathub io.gitlab.Goodvibes #radio player for streaming online radio stations
-flatpak install -y flathub org.sdrangel.SDRangel
 
 #Install From Ubuntu Repo
 sudo apt-get install -y synaptic #GUI package manager and app installer
@@ -70,32 +51,18 @@ sudo apt-get install -y intel-gpu-tools #Run intel_gpu_top to check vaapi use
 sudo apt-get install -y intel-media-va-driver-non-free #faster intel quicksync version of the Vaapi driver for intel UHD620 graphic card
 sudo apt-get install -y vainfo #Run vainfo to check that vaapi driver is installed
 sudo apt-get install -y gnome-tweaks
-sudo apt-get install -y ffmpeg #Needed to convert Audible files to .m4a
 sudo apt-get install -y clamav #Command line Virus scanning. sudo freshclam then clamscan -r -i --exclude-dir="^/sys" --exclude-dir="^/var/lib/flatpak" --bell /
 sudo apt-get install -y libfuse2t64 #needed for appimage software to run
 sudo apt-get install -y fzf #fuzzy search and history for BASH Terminal
-sudo apt-get install -y tmux #terminal session window panes
 sudo apt-get install -y pcscd #needed for yubikey PIV gration
 sudo apt-get install -y libpam-u2f #needed for yubikey sudo authentication
 sudo apt-get install -y btop #Performance monitoring TUI tool
-sudo apt-get install -y vulkan-tools #check Vullkan version and operation
-sudo apt-get install -y rtl-433 #433MHz monitoring with RTL-SDR dongle
 sudo apt-get install -y tailscale #Install Tailscale (official APT repo install)
 sudo apt-get install -y ubuntu-pro-client #Install Ubuntu Pro client for extended security updates
-sudo apt-get install -y gnome-shell-extension-appindicator #needed for ubuntu 26.04 to get legacy app indicators working
-sudo apt-get install -y libayatana-appindicator3-1 #needed for ubuntu 26.04 to get legacy app indicators working
-sudo apt-get install -y evtest #Gamepad test in terminal
-sudo apt-get install -y rtl-sdr #Software defined radio support for RTL-SDR dongles, allows them to be used with applications like SDR++ and GQRX without needing to run them as root, also allows them to be used with the rtl_433 software for monitoring 433MHz devices like weather stations, remote power outlets, and some wireless sensors
 sudo apt-get install -y f3 #verification checker for SD cards
-sudo apt-get install -y libudev-dev pkg-config #required for compiling some software from source e.g. RUST and Cargo packages
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y google-chrome-stable # Google Chrome (Resilient Manual Config)
 
 #Download and intsall deb Files, Clean then Delete
-
-# --- SDR++ (Nightly .deb Install) ---
-wget -P /tmp https://github.com/AlexandreRouma/SDRPlusPlus/releases/download/nightly/sdrpp_ubuntu_noble_amd64.deb # 1. Download the nightly build directly to /tmp (no sudo needed for wget here)
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y /tmp/sdrpp_ubuntu_noble_amd64.deb # 2. Install using apt (automatically pulls dependencies and runs unattended)
-rm -f /tmp/sdrpp_ubuntu_noble_amd64.deb # 3. Clean up the downloaded installer
 
 # Install Dropbox
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nautilus-dropbox #Install Dropbox from the official .deb package to ensure the latest version is installed
@@ -133,13 +100,6 @@ install -m 0755 ~/software-install/radio /home/ian/.local/bin/ # Copy the radio 
 
 # Enable ThinkPad Battery Protection (Preservation Mode via gnome UI settings) - This is a one-time command to enable the feature, after which it can be controlled via the gnome settings UI. The command below enables the feature and sets the charge threshold to 80% for battery preservation.
 dbus-send --system --print-reply --dest=org.freedesktop.UPower /org/freedesktop/UPower/devices/battery_BAT0 org.freedesktop.UPower.Device.EnableChargeThreshold boolean:true
-
-#flatpak overrides
-flatpak override org.sdrangel.SDRangel --socket=wayland
-
-# T14 G2 Intel Temperature Sensor Override for dracut - enable the override with dracut to load on boot 
-sudo install -m 0644 software-installs/50-acpi-override.conf /etc/dracut.conf.d/ # Safely copy the file over and enforce standard system read permissions (0644)
-sudo dracut -f
 
 #SNAP overrides
 
