@@ -85,18 +85,8 @@ sudo nordvpn set tpl on #set threat protection lite to on
 #Install Python packages
 
 #Copy Configuration Files
-sudo cp ~/software-install/google-chrome.desktop ~/.local/share/applications/ #chrome desktop shortcut including hardare video decode settings
-sudo cp ~/software-install/99-fiio.rules /etc/udev/rules.d/ #allow chrome web UI to configure Fiio KA17
-sudo cp ~/software-install/60-graph-rate.lua ~/.config/wireplumber/main.lua.d/ #Lua script to set the graph rate in wireplumber for better performance with the Fiio KA17 external DAC
-sudo cp ~/software-install/10-disable-idle-lock.conf ~/.config/pipewire/pipewire-pulse.conf.d/ #Disable idle lock in pipewire to prevent audio dropouts when using the Fiio KA17 external DAC
-sudo cp ~/software-install/org.mozilla.firefox.desktop ~/.local/share/applications/ #firefox desktop shortcut renamed for flatpak version with hardware video decode enabled
-sudo cp ~/software-install/20.rtlsdr.rules /etc/udev/rules.d/ #allows RTL-SDR dongle to be used without sudo
 sudo cp ~/stations.xml ~/.var/app/io.gitlab.Goodvibes/data/goodvibes/ #Goodvibes radio station list
-sudo cp ~/software-install/99-8bitdo.rules /etc/udev/rules.d/ #rules to make 8BitDo controller work better
-sudo cp ~/software-install/uinput.conf /etc/modules-load.d/ #enable extra gamepad input for steam mode
-sudo cp ~/software-install/blacklist-rtl.conf /etc/modprobe.d/ #Blacklist the default rtl2832u driver for RTL-SDR dongles to prevent conflicts with the rtl-sdr package and allow them to be used with applications like SDR++ and GQRX without needing to run them as root, also allows them to be used with the rtl_433 software for monitoring 433MHz devices like weather stations, remote power outlets, and some wireless sensors
-sudo cp ~/software-install/SSDT-DDNT.aml /usr/local/lib/firmware/acpi/ #Copy the pre-compiled ACPI override table for the T14 G2 Intel Temperature Sensor to the firmware directory for dracut to use during boot
-install -m 0755 ~/software-install/radio /home/ian/.local/bin/ # Copy the radio script and make it executable in one action
+
 
 # Enable ThinkPad Battery Protection (Preservation Mode via gnome UI settings) - This is a one-time command to enable the feature, after which it can be controlled via the gnome settings UI. The command below enables the feature and sets the charge threshold to 80% for battery preservation.
 dbus-send --system --print-reply --dest=org.freedesktop.UPower /org/freedesktop/UPower/devices/battery_BAT0 org.freedesktop.UPower.Device.EnableChargeThreshold boolean:true
